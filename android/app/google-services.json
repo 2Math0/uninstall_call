@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "135742601571",
+    "project_id": "test-a22b3",
+    "storage_bucket": "test-a22b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135742601571:android:db6bd7d4a237405fab7b56",
+        "android_client_info": {
+          "package_name": "com.twomath.uninstall_call"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIU1UtAhc7seLzkPB58LCQtuMdB1O-IL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135742601571:android:5c25ef26b1356ed4ab7b56",
+        "android_client_info": {
+          "package_name": "com.twomath.uninstall_event"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIU1UtAhc7seLzkPB58LCQtuMdB1O-IL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
