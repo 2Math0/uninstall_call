@@ -6,7 +6,8 @@ import 'firebase_options.dart';
 import 'package:app_install_events/app_install_events.dart';
 
 void main() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      // debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -38,39 +40,42 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  List<IUEvent> _events = [];
+
   late AppIUEvents _appIUEvents;
 
   @override
   void initState() {
-    super.initState();
-    // Initialize the AppIUEvents class
     _appIUEvents = AppIUEvents();
 
-    // Listen to app install and uninstall events
     _appIUEvents.appEvents.listen((event) {
-      // Check if the event is an install event
       if (event.type == IUEventType.installed) {
-        print("App installed: ${event.packageName}");
+        print('App installed: ${event.packageName}');
+      } else {
+        print('App uninstalled: ${event.packageName}');
+        updateUninstallInfo('abdElGhani');
       }
 
-      // Check if the event is an uninstall event
-      if (event.type == IUEventType.uninstalled) {
-        print("App uninstalled: ${event.packageName}");
-        Future.wait([updateUninstallInfo("user_12345")]);
-      }
+      setState(() {
+        _events.add(event);
+      });
     });
+
+    super.initState();
   }
 
   @override
   void dispose() {
-    _appIUEvents.dispose(); // Dispose the stream
+    _appIUEvents.dispose();
     super.dispose();
   }
 
-  void _incrementCounter() {
+
+  Future<void> _incrementCounter() async {
     setState(() {
       _counter++;
     });
+    await uploadNumberToRealtimeDB(_counter);
   }
 
   @override
@@ -95,19 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('You have pushed the button this many times:'),
@@ -115,11 +107,23 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            ListView.builder(
+              itemCount: _events.length,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final event = _events[index];
+                return ListTile(
+                  title: Text(event.packageName),
+                  subtitle: Text(event.type.toString()),
+                );
+              },
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () async => await _incrementCounter(),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
